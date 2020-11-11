@@ -16,6 +16,8 @@ int matrixChain(int dim[], int i, int j);
 void matrixChainTabular(int dim[], int size);
 void printResults(int size);
 void resetMatrices(int size);
+int getRandomSize();
+void printRandomDim(int dim[], int size);
 
 // Matrices to be modifed
 int costMatrix[20][20];
@@ -28,68 +30,105 @@ int main() {
 
     cout << "*** Welcome to Matrix Chain Multiplication solved by recursion! ***" << endl;
 
-    // Predefined dimensions and random length dimension vector
+    // *** Predefined dimensions and random length dimension vector
     int probOne[probOneSize] = { 30, 1, 40, 10, 25 };
     int probTwo[probTwoSize] = { 80, 96, 66, 4, 85, 94, 68, 76, 75 };
+    int randomD[20];
     int minCost = -1;
 
-    // Perform MCM on problem 1 and print out both matrices; calculate time
-    cout << "\n*** Problem 1 - {30, 1, 40, 10, 25} ***" << endl;
+    // Populate random dimension array
+    int randomSize = getRandomSize();
+    for (int i = 0; i < randomSize; i++) {
+        randomD[i] = (rand() % 99) + 1;
+    }
+
+    // *** Perform MCM on problem 1 and print out both matrices; calculate time
+    cout << "\n*************** RECURSIVE ***************" << endl;
+    cout << "Problem 1 - {30, 1, 40, 10, 25} ***" << endl;
 
     auto begOneRec = chrono::high_resolution_clock::now();
     minCost = matrixChain(probOne, 1, probOneSize - 1);
     auto endOneRec = chrono::high_resolution_clock::now();
-    auto totOneRec = chrono::duration_cast<chrono::microseconds>(endOneRec - begOneRec);
+    auto totOneRec = chrono::duration_cast<chrono::nanoseconds>(endOneRec - begOneRec);
 
     printResults(probOneSize - 1);
-    cout << "Minimum cost is " + to_string(minCost) + " and ";
+    cout << "Minimum cost is " + to_string(minCost) + " and split is " + to_string(splitMatrix[0][probOneSize-2]);
     resetMatrices(probOneSize - 1);
 
-    // Perform MCM on problem 2 and print out both matrices
-    cout << "\n\n*** Problem 2 - {80, 96, 66, 4, 85, 94, 68, 76, 75} ***" << endl;
+    // *** Perform MCM on problem 2 and print out both matrices
+    cout << "\n\nProblem 2 - {80, 96, 66, 4, 85, 94, 68, 76, 75} ***" << endl;
 
     auto begTwoRec = chrono::high_resolution_clock::now();
     minCost = matrixChain(probTwo, 1, probTwoSize - 1);
     auto endTwoRec = chrono::high_resolution_clock::now();
-    auto totTwoRec = chrono::duration_cast<chrono::microseconds>(endTwoRec - begTwoRec);
+    auto totTwoRec = chrono::duration_cast<chrono::nanoseconds>(endTwoRec - begTwoRec);
 
     printResults(probTwoSize - 1);
+    cout << "Minimum cost is " + to_string(minCost) + " and split is " + to_string(splitMatrix[0][probTwoSize - 2]);
     resetMatrices(probTwoSize - 1);
 
-    // Perform MCM on problem 1 with tabular and print out both matrices
-    cout << "\n*** Problem 1 (Tabular) - {30, 1, 40, 10, 25} ***" << endl;
+    // *** Perform MCM on randomly generated dimension array
+    // Print out all values in random dimension array
+    cout << "\n\nRandom Dimensions - {";
+    printRandomDim(randomD, randomSize);
+
+    // Solve random dimensions using recursion
+    auto begRanRec = chrono::high_resolution_clock::now();
+    minCost = matrixChain(randomD, 1, randomSize - 1);
+    auto endRanRec = chrono::high_resolution_clock::now();
+    auto totRanRec = chrono::duration_cast<chrono::nanoseconds>(endRanRec - begRanRec);
+
+    printResults(randomSize - 1);
+    cout << "Minimum cost is " + to_string(minCost) + " and split is " + to_string(splitMatrix[0][randomSize - 2]);
+    resetMatrices(randomSize - 1);
+
+    // *** Perform MCM on problem 1 with tabular and print out both matrices
+    cout << "\n\n*************** TABULAR ***************" << endl;
+    cout << "Problem 1 - {30, 1, 40, 10, 25} ***" << endl;
 
     auto begOneTab = chrono::high_resolution_clock::now();
     matrixChainTabular(probOne, probOneSize - 1);
     auto endOneTab = chrono::high_resolution_clock::now();
-    auto totOneTab = chrono::duration_cast<chrono::microseconds>(endOneTab - begOneTab);
+    auto totOneTab = chrono::duration_cast<chrono::nanoseconds>(endOneTab - begOneTab);
 
     printResults(probOneSize - 1);
+    cout << "Minimum cost is " + to_string(costMatrix[0][probOneSize - 2]) + " and split is " + to_string(splitMatrix[0][probOneSize - 2]);
     resetMatrices(probOneSize - 1);
 
-    // Perform MCM on problem 2 with tabular and print out both matrices
-    cout << "\n*** Problem 2 (Tabular) - {80, 96, 66, 4, 85, 94, 68, 76, 75} ***" << endl;
+    // *** Perform MCM on problem 2 with tabular and print out both matrices
+    cout << "\n\nProblem 2 - {80, 96, 66, 4, 85, 94, 68, 76, 75} ***" << endl;
 
     auto begTwoTab = chrono::high_resolution_clock::now();
     matrixChainTabular(probTwo, probTwoSize - 1);
     auto endTwoTab = chrono::high_resolution_clock::now();
-    auto totTwoTab = chrono::duration_cast<chrono::microseconds>(endTwoTab - begTwoTab);
+    auto totTwoTab = chrono::duration_cast<chrono::nanoseconds>(endTwoTab - begTwoTab);
 
     printResults(probTwoSize - 1);
+    cout << "Minimum cost is " + to_string(costMatrix[0][probTwoSize-2]) + " and split is " + to_string(splitMatrix[0][probTwoSize - 2]);
     resetMatrices(probTwoSize - 1);
 
+    // Print out all values in random dimension array
+    cout << "\n\nRandom Dimensions - {";
+    printRandomDim(randomD, randomSize);
+
+    // Solve random dimensions using recursion
+    auto begRanTab = chrono::high_resolution_clock::now();
+    matrixChainTabular (randomD, randomSize - 1);
+    auto endRanTab = chrono::high_resolution_clock::now();
+    auto totRanTab = chrono::duration_cast<chrono::nanoseconds>(endRanTab - begRanTab);
+
+    printResults(randomSize - 1);
+    cout << "Minimum cost is " + to_string(costMatrix[0][randomSize-2]) + " and split is " + to_string(splitMatrix[0][randomSize - 2]);
+    resetMatrices(randomSize - 1);
+
     // Print out execution time for each problem and each problems algorithm
-    cout << "\nExecution time for Problem 1 Recursive is " + to_string(totOneRec.count()) + " microseconds or " +
-        to_string(totOneRec.count() / 1000000) << +" seconds." << endl;
-
-    cout << "\nExecution time for Problem 2 Recursive is " + to_string(totTwoRec.count()) + " microseconds or " +
-        to_string(totTwoRec.count() / 1000000) << +" seconds." << endl;
-
-    cout << "\nExecution time for Problem 1 Tabular is " + to_string(totOneTab.count()) + " microseconds or " +
-        to_string(totOneTab.count() / 1000000) << +" seconds." << endl;
-
-    cout << "\nExecution time for Problem 1 Recursive is " + to_string(totTwoTab.count()) + " microseconds or " +
-        to_string(totTwoTab.count() / 1000000) << +" seconds." << endl;
+    cout << "\n\n*** Execution Times for above problems ***" << endl;
+    cout << "Execution time for Problem 1 Recursive is " + to_string(totOneRec.count()) + " nanoseconds." << endl;
+    cout << "\nExecution time for Problem 2 Recursive is " + to_string(totTwoRec.count()) + " nanoseconds." << endl;
+    cout << "\nExecution time for Random Recursive is " + to_string(totRanRec.count()) + " nanoseconds." << endl;
+    cout << "\nExecution time for Problem 1 Tabular is " + to_string(totOneTab.count()) + " nanoseconds." << endl;
+    cout << "\nExecution time for Problem 2 Tabular is " + to_string(totTwoTab.count()) + " nanoseconds." << endl;
+    cout << "\nExecution time for Random Tabular is " + to_string(totRanTab.count()) + " nanoseconds." << endl;
 }
 
 /*
@@ -173,6 +212,28 @@ void resetMatrices(int size) {
         for (int y = 0; y < size; y++) {
             costMatrix[x][y] = 0;
             splitMatrix[x][y] = 0;
+        }
+    }
+}
+
+/*
+Return random size for random dimensions array
+*/
+int getRandomSize() {
+    srand(time(NULL));
+    return (rand() % 20) + 1;
+}
+
+/*
+Print out header for random dimensions
+*/
+void printRandomDim(int dim[], int size) {
+    for (int i = 0; i < size; i++) {
+        if (i == size - 1) {
+            cout << to_string(dim[i]) + "} ***" << endl;
+        }
+        else {
+            cout << to_string(dim[i]) + ", ";
         }
     }
 }
